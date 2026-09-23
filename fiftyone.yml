@@ -1,0 +1,6 @@
+format: FiftyOneDataset
+name: fisheye8k
+tags:
+- fiftyone
+- image
+- object-detection

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Ultralytics / YOLO outputs
+runs/
+*.pt
+*.onnx
+*.engine
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+#Data
+/data/
+/dataset/
+
+# Cache
+.cache/
