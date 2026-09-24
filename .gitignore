@@ -27,9 +27,14 @@ runs/
 # Logs
 *.log
 
-#Data
-/data/
-/dataset/
+# Data
+fisheye8k/data/
+fisheye8k/dataset/
+data.tar.zst
 
 # Cache
 .cache/
+
+# Models
+/runs/
+*.pt
