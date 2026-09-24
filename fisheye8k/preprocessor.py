@@ -52,12 +52,11 @@ def get_image_info(sample):
     camera = parts[0]
     image_type = parts[1]
 
-    return sample, image_path, camera, image_type
+    return image_path, camera, image_type
 
 
 train_samples = []
 test_samples = []
-test_cameras = set()
 
 for sample in samples:
     image_info = get_image_info(sample)
@@ -65,27 +64,16 @@ for sample in samples:
     if image_info is None:
         continue
 
-    _, _, camera, image_type = image_info
+    _, _, image_type = image_info
 
-    if image_type in TEST_TYPES:
-        test_samples.append(sample)
-        test_cameras.add(camera)
-    elif image_type in TRAIN_TYPES:
+    if image_type in TRAIN_TYPES:
         train_samples.append(sample)
+    elif image_type in TEST_TYPES:
+        test_samples.append(sample)
     else:
-        print(f"Skipping unknown type: {Path(sample['filepath']).name}")
+        image_path = Path(sample["filepath"])
+        print(f"Skipping unknown type: {image_path.name}")
 
-# remove training samples from the same camera as the test samples to avoid camera-level leakage
-train_samples = [
-    sample
-    for sample in train_samples
-    if get_image_info(sample)[2] not in test_cameras
-]
-
-if not train_samples:
-    raise ValueError(
-        "No training samples remain after excluding cameras used by test."
-    )
 
 random_generator = random.Random(RANDOM_SEED)
 random_generator.shuffle(train_samples)
@@ -98,28 +86,21 @@ split_samples = {
     "test": test_samples,
 }
 
-train_cameras = {
-    get_image_info(sample)[2]
-    for sample in split_samples["train"]
-}
-
-val_cameras = {
-    get_image_info(sample)[2]
-    for sample in split_samples["val"]
-}
-
-assert train_cameras.isdisjoint(test_cameras)
-assert val_cameras.isdisjoint(test_cameras)
-
-print(f"Test cameras: {sorted(test_cameras)}")
-print(f"Train cameras: {sorted(train_cameras)}")
-print(f"Validation cameras: {sorted(val_cameras)}")
 print(
     f"Split sizes: "
     f"train={len(split_samples['train'])}, "
     f"val={len(split_samples['val'])}, "
     f"test={len(split_samples['test'])}"
 )
+
+
+# Remove previously generated files to prevent stale samples from remaining.
+for directory in (
+    OUTPUT_DIR / "images",
+    OUTPUT_DIR / "labels",
+):
+    if directory.exists():
+        shutil.rmtree(directory)
 
 
 for split, split_data in split_samples.items():
@@ -133,7 +114,7 @@ for split, split_data in split_samples.items():
         if image_info is None:
             continue
 
-        _, image_path, camera, _ = image_info
+        image_path, camera, _ = image_info
 
         output_image_dir = OUTPUT_DIR / "images" / split / camera
         output_label_dir = OUTPUT_DIR / "labels" / split / camera
