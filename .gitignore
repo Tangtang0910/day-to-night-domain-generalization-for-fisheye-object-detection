@@ -30,6 +30,7 @@ runs/
 # Data
 fisheye8k/data/
 fisheye8k/dataset/
+fisheye8k/dataset_night_v001/
 data.tar.zst
 
 # Cache
@@ -38,3 +39,4 @@ data.tar.zst
 # Models
 /runs/
 *.pt
+/ultralytics/

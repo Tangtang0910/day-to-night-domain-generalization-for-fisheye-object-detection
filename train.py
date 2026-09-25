@@ -18,6 +18,7 @@ from ultralytics import YOLO  # noqa: E402
 def parse_args() -> argparse.Namespace:
     """Parse command-line training options."""
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data",type=Path, default=ROOT / "fisheye8k" / "dataset_night_v001" / "data.yaml", help="Path to the dataset YAML file.")
     parser.add_argument("--model", default="yolov8s.pt", help="Model weights or model YAML")
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--imgsz", type=int, default=256)
@@ -30,17 +31,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", action="store_true", help="Resume from the checkpoint passed to --model")
     return parser.parse_args()
 
-# python3 train.py --device 0 --name yolov8s_day_to_night
+# python3 train.py --data fisheye8k/dataset_night_v001/data.yaml --device 0 --name yolov8s_day_to_night
 
 def main() -> None:
     """Create the model and start FishEye8K detection training."""
     args = parse_args()
-    if not DATASET_YAML.is_file():
-        raise FileNotFoundError(f"Dataset configuration not found: {DATASET_YAML}")
+    dataset_yaml = args.data.expanduser().resolve()
+
+    if not dataset_yaml.is_file():
+        raise FileNotFoundError(
+            f"Dataset configuration not found: {dataset_yaml}"
+        )
 
     model = YOLO(args.model)
     model.train(
-        data=str(DATASET_YAML),
+        data=str(dataset_yaml),
         epochs=args.epochs,
         imgsz=args.imgsz,
         batch=args.batch,

@@ -20,6 +20,7 @@ from ultralytics import YOLO  # noqa: E402
 def parse_args() -> argparse.Namespace:
     """Parse command-line evaluation options."""
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data",type=Path, default=ROOT / "fisheye8k" / "dataset_night_v001" / "data.yaml", help="Path to the dataset YAML file.")
     parser.add_argument("--weights", type=Path, default=DEFAULT_WEIGHTS)
     parser.add_argument("--imgsz", type=int, default=256)
     parser.add_argument("--batch", type=int, default=16)
@@ -29,14 +30,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--name", default="yolov8s_night_test")
     return parser.parse_args()
 
+# python3 test.py --data fisheye8k/dataset_night_v001/data.yaml --weights runs/fisheye8k/yolov8s_day_to_night-3/weights/best.pt --device 0
+
 
 def main() -> None:
     """Evaluate the best checkpoint on the nighttime test split."""
     args = parse_args()
     weights = args.weights.expanduser().resolve()
+    dataset_yaml = args.data.expanduser().resolve()
 
-    if not DATASET_YAML.is_file():
-        raise FileNotFoundError(f"Dataset configuration not found: {DATASET_YAML}")
+    if not dataset_yaml.is_file():
+        raise FileNotFoundError(
+            f"Dataset configuration not found: {dataset_yaml}"
+        )
     if not weights.is_file():
         raise FileNotFoundError(f"Model weights not found: {weights}")
 
@@ -49,7 +55,7 @@ def main() -> None:
 
     model.add_callback("on_val_end", capture_output_dir)
     metrics = model.val(
-        data=str(DATASET_YAML),
+        data=str(dataset_yaml),
         split="test",
         imgsz=args.imgsz,
         batch=args.batch,
