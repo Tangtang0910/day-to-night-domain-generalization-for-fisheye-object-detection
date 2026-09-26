@@ -30,7 +30,10 @@ runs/
 # Data
 fisheye8k/data/
 fisheye8k/dataset/
-fisheye8k/dataset_night_v001/
+fisheye8k/daytonight_dataset/
+fisheye8k/old/
+fisheye8k/dataset_camera3_4/
+fisheye8k/daytonight_preview/
 data.tar.zst
 
 # Cache

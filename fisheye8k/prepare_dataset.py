@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 SAMPLES_FILE = Path("samples.json")
-OUTPUT_DIR = Path("dataset")
+OUTPUT_DIR = Path("dataset_v3")
 
 TRAIN_TYPES = {"A", "M"}
 TEST_TYPES = {"N"}
@@ -55,7 +55,7 @@ def get_image_info(sample):
     return image_path, camera, image_type
 
 
-train_samples = []
+train_samples_by_camera = {}
 test_samples = []
 
 for sample in samples:
@@ -64,10 +64,10 @@ for sample in samples:
     if image_info is None:
         continue
 
-    _, _, image_type = image_info
+    _, camera, image_type = image_info
 
     if image_type in TRAIN_TYPES:
-        train_samples.append(sample)
+        train_samples_by_camera.setdefault(camera, []).append(sample)
     elif image_type in TEST_TYPES:
         test_samples.append(sample)
     else:
@@ -76,13 +76,18 @@ for sample in samples:
 
 
 random_generator = random.Random(RANDOM_SEED)
-random_generator.shuffle(train_samples)
+train_split = []
+val_split = []
 
-train_count = int(len(train_samples) * TRAIN_RATIO)
+for camera_samples in train_samples_by_camera.values():
+    random_generator.shuffle(camera_samples)
+    train_count = int(len(camera_samples) * TRAIN_RATIO)
+    train_split.extend(camera_samples[:train_count])
+    val_split.extend(camera_samples[train_count:])
 
 split_samples = {
-    "train": train_samples[:train_count],
-    "val": train_samples[train_count:],
+    "train": train_split,
+    "val": val_split,
     "test": test_samples,
 }
 

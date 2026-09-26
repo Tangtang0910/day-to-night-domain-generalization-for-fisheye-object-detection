@@ -20,7 +20,7 @@ from ultralytics import YOLO  # noqa: E402
 def parse_args() -> argparse.Namespace:
     """Parse command-line evaluation options."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data",type=Path, default=ROOT / "fisheye8k" / "dataset_night_v001" / "data.yaml", help="Path to the dataset YAML file.")
+    parser.add_argument("--data",type=Path, default=ROOT / "fisheye8k" / "dataset" / "data.yaml", help="Path to the dataset YAML file.")
     parser.add_argument("--weights", type=Path, default=DEFAULT_WEIGHTS)
     parser.add_argument("--imgsz", type=int, default=256)
     parser.add_argument("--batch", type=int, default=16)
@@ -30,7 +30,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--name", default="yolov8s_night_test")
     return parser.parse_args()
 
-# python3 test.py --data fisheye8k/dataset_night_v001/data.yaml --weights runs/fisheye8k/yolov8s_day_to_night-3/weights/best.pt --device 0
+# python3 test.py --data fisheye8k/daytonight_dataset_gray/data.yaml --weights runs/fisheye8k/yolov8s_daytonight_gray/weights/best.pt --device 0 --name yolov8s_daytonight_gray_test
 
 
 def main() -> None:
