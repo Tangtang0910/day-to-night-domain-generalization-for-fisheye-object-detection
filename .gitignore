@@ -34,6 +34,8 @@ fisheye8k/daytonight_dataset_mixture/
 fisheye8k/dataset_camera3_4/
 fisheye8k/daytonight_preview_dataset_mixture/
 fisheye8k/dataset_img2img/
+fisheye8k/dataset_self_training_07/
+fisheye8k/pseudo_labels_07/
 data.tar.zst
 
 fisheye8k/run_all_daytonight.sh
