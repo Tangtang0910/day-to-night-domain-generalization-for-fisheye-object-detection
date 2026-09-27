@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", action="store_true", help="Resume from the checkpoint passed to --model")
     return parser.parse_args()
 
-# python3 train.py --data fisheye8k/daytonight_dataset_gray/data.yaml --device 0 --name yolov8s_daytonight_gray
+# python3 train.py --data fisheye8k/daytonight_dataset_mixture/data.yaml --device 0 --name yolov8s_daytonight_mixture
 
 def main() -> None:
     """Create the model and start FishEye8K detection training."""

@@ -15,9 +15,9 @@ VALUE = None
 
 # python3 dataset_transfer_daytonight.py --mode preview --experiment gamma --value 1.30 --name daytonight_preview_dataset_
 
-# python3 dataset_transfer_daytonight.py --mode full --experiment color_temperature --value 0.82,0.93,1.12 --name daytonight_dataset_
+# python3 dataset_transfer_daytonight.py --mode full --experiment gamma --value 1.12 --name daytonight_dataset_
 
-# python3 dataset_transfer_daytonight.py --mode preview --experiment color_temperature --value 0.82,0.93,1.12 --name daytonight_preview_dataset_color_temperature_0.82_0.93_1.12
+# python3 dataset_transfer_daytonight.py --mode full --experiment mixture --name daytonight_dataset_mixture
 
 
 def get_next_output_dir(output_name: str) -> Path:
@@ -70,17 +70,6 @@ def make_night_image(image: Image.Image) -> Image.Image:
         pixels = np.clip(pixels * 255.0, 0, 255).astype(np.uint8)
         return Image.fromarray(pixels)
 
-    if EXPERIMENT == "color_temperature":
-        red_scale, green_scale, blue_scale = VALUE
-
-        pixels = np.asarray(image).astype(np.float32)
-        pixels[..., 0] *= red_scale
-        pixels[..., 1] *= green_scale
-        pixels[..., 2] *= blue_scale
-
-        pixels = np.clip(pixels, 0, 255).astype(np.uint8)
-        return Image.fromarray(pixels)
-
     if EXPERIMENT == "vignette":
         pixels = np.asarray(image).astype(np.float32) / 255.0
         height, width = pixels.shape[:2]
@@ -128,6 +117,50 @@ def make_night_image(image: Image.Image) -> Image.Image:
     if EXPERIMENT == "blur":
         return image.filter(ImageFilter.GaussianBlur(radius=VALUE))
 
+    if EXPERIMENT == "mixture":
+        image = ImageEnhance.Brightness(image).enhance(0.85)
+        image = ImageEnhance.Contrast(image).enhance(0.40)
+        image = ImageEnhance.Color(image).enhance(0.00)
+
+        pixels = np.asarray(image).astype(np.float32) / 255.0
+        height, width = pixels.shape[:2]
+
+        y, x = np.ogrid[:height, :width]
+        center_x = width / 2.0
+        center_y = height / 2.0
+
+        distance = np.sqrt(
+            ((x - center_x) / width) ** 2
+            + ((y - center_y) / height) ** 2
+        )
+
+        max_distance = np.sqrt(0.5**2 + 0.5**2)
+        distance = distance / max_distance
+
+        edge_start = 0.60
+        edge_factor = np.clip(
+            (distance - edge_start) / (1.0 - edge_start),
+            0.0,
+            1.0,
+        )
+
+        vignette = 1.0 - 2.00 * edge_factor
+        pixels *= vignette[..., None]
+
+        pixels *= 255.0
+
+        noise = np.random.default_rng(67).normal(
+            loc=0.0,
+            scale=5.0,
+            size=pixels.shape,
+        )
+        pixels += noise
+
+        pixels = np.clip(pixels, 0, 255).astype(np.uint8)
+        image = Image.fromarray(pixels)
+
+        return image.filter(ImageFilter.GaussianBlur(radius=1.0))
+        
     raise ValueError(f"Unknown experiment: {EXPERIMENT}")
     # image = image.convert("RGB")
 
@@ -307,6 +340,7 @@ def parse_args():
             "vignette",
             "noise",
             "blur",
+            "mixture",
         ),
         default=None,
         help="The experiment to run.",
