@@ -30,7 +30,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--name", default="yolov8s_night_test")
     return parser.parse_args()
 
-# python3 test.py --data fisheye8k/daytonight_dataset_mixture/data.yaml --weights runs/fisheye8k/yolov8s_daytonight_mixture/weights/best.pt --device 0 --name yolov8s_daytonight_mixture_test
+# python3 test.py --data fisheye8k/daytonight_dataset_img2img_saturation_000/data.yaml --weights runs/fisheye8k/yolov8s_daytonight_img2img_saturation_000/weights/best.pt --device 0 --name yolov8s_daytonight_img2img_saturation_000_test
 
 
 def main() -> None:

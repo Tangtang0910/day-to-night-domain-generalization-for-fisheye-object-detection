@@ -28,14 +28,13 @@ runs/
 *.log
 
 # Data
-fisheye8k/data/
-fisheye8k/dataset/
 fisheye8k/daytonight_dataset_mixture/
 fisheye8k/dataset_camera3_4/
-fisheye8k/daytonight_preview_dataset_mixture/
 fisheye8k/dataset_img2img/
-fisheye8k/dataset_self_training_07/
-fisheye8k/pseudo_labels_07/
+fisheye8k/daytonight_dataset_img2img_saturation_000/
+fisheye8k/daytonight_dataset_saturation_000/
+fisheye8k/dataset_unused/
+fisheye8k/pseudo_labels/
 data.tar.zst
 
 fisheye8k/run_all_daytonight.sh

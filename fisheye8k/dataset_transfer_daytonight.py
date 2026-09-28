@@ -8,17 +8,16 @@ import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
 
 ROOT_DIR = Path(__file__).resolve().parent
-DATASET_DIR = ROOT_DIR / "dataset_camera3_4"
+DATASET_DIR = ROOT_DIR / "dataset_img2img"
 IMAGE_EXTENSIONS = {".png"}
 EXPERIMENT = "brightness"
 VALUE = None
 
-# python3 dataset_transfer_daytonight.py --mode preview --experiment gamma --value 1.30 --name daytonight_preview_dataset_
+# python3 dataset_transfer_daytonight.py --mode preview --experiment saturation --value 0.00 --name daytonight_preview_dataset_img2img_saturation_000
 
-# python3 dataset_transfer_daytonight.py --mode full --experiment gamma --value 1.12 --name daytonight_dataset_
+# python3 dataset_transfer_daytonight.py --mode full --experiment saturation --value 0.00 --name daytonight_dataset_img2img_saturation_000
 
 # python3 dataset_transfer_daytonight.py --mode full --experiment mixture --name daytonight_dataset_mixture
-
 
 def get_next_output_dir(output_name: str) -> Path:
     existing_versions = []
@@ -54,6 +53,9 @@ def get_next_preview_dir(preview_name: str) -> Path:
 
 def make_night_image(image: Image.Image) -> Image.Image:
     image = image.convert("RGB")
+
+    if EXPERIMENT is None:
+        return image
 
     if EXPERIMENT == "brightness":
         return ImageEnhance.Brightness(image).enhance(VALUE)
